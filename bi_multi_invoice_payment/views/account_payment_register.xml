@@ -1,0 +1,120 @@
+<odoo>
+  <data>
+    <record id="tree_payment_register" model="ir.ui.view">
+      <field name="name">tree.payment.register</field>
+      <field name="model">account.custom.payment.register</field>
+      <field name="arch" type="xml">
+        <tree string="Payment Register">
+          <field name="partner_id" string="Partner"/>
+          <field name="journal_id" string="Journal"/>
+          <field name="payment_date" string="Date"/>
+          <field name="deposit_number" string="Deposit Number"/>
+          <field name="check_number" string="Check Number"/>
+          <field name="total_invoice_amount" string="Total Invoice Amount"/>
+          <!-- <field name="total_balance" string="Total Balance"/> -->
+	  <field name="state"
+		 statusbar_visible="draft,done"
+		 widget="badge" decoration-info="state == 'draft'"
+		 decoration-success="state == 'posted'"/>
+        </tree>
+      </field>
+    </record>
+
+    <record id="view_account_custom_payment_form_multi" model="ir.ui.view">
+      <field name="name">account.custom.payment.form.multi</field>
+      <field name="model">account.custom.payment.register</field>
+      <field name="arch" type="xml">
+        <form string="Register Payment">
+	  <header>
+	    <field name="state"
+		   widget="statusbar"
+		   statusbar_visible="draft,done"/>
+	    <button string="Create Payment"
+		    name="create_payments"
+		    type="object"
+		    class="oe_highlight"
+		    attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+	  </header>
+	  <sheet>
+          <group>
+            <group>
+              <field name="invoice_type" invisible="1"/>
+              <field name="partner_id"
+		     domain="['&amp;', ('type','=','contact'),('customer_rank','&gt;',0)]"
+		     string="Partner"
+		     attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+              <field name="payment_method_id"
+		     widget="radio"
+		     domain="[('code', 'in', ['batch_payment', 'electronic'])]"
+		     attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+              <field name="group_payment"
+		     attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+	      <button string="Pay All" name="autofill_lines" type="object"
+		      class="oe_highlight"
+		      attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+            </group>
+            <group>
+              <field name="journal_id" widget="selection"
+		     attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+              <field name="is_initial" invisible="1"/>
+              <field name="payment_date"
+		     attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+              <field name="deposit_number" string="Deposit Number"
+	      	     placeholder="EJ: Deposit 23112018 .."
+		     attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+              <field name="check_number" string="Check Number"
+	      	     placeholder="EJ: Check 23112018 .."
+		     attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+              <field name="is_authorized_percent" invisible="1"/>
+            </group>
+          </group>
+          <notebook>
+            <page name="register_lines" string="Invoices">
+              <field name="register_line_ids"
+		     attrs="{'readonly': [('state', '!=', 'draft')]}">
+                <tree editable="bottom" string="Lines">
+                  <field name="move_id" />
+                  <field name="partner_id" invisible="0"/>
+                  <field name="discount"
+			 attrs="{'readonly': [('amount_balance','=', 0)]}"/>
+                  <field name="amount_total" readonly="1"/>
+                  <field name="amount_residual" readonly="1"/>
+                  <field name="amount_payment" />
+                  <field name="amount_balance" readonly="1" force_save="1"/>
+                  <field name="percent_balance" widget='percentage' readonly="1"/>
+                </tree>
+              </field>
+              <!-- Totals (only invoices / receipts) -->
+              <group class="oe_subtotal_footer" >
+                <field name="total_balance" string="Total Balance Percent"
+		       widget='percentage'/>
+                <!-- <field name="credit_total_balance" string="nama q pa ver" -->
+		<!--        widget='percentage'/> -->
+                <field name="total_invoice_amount" string='Total Payment'/>
+              </group>
+            </page>
+          </notebook>
+          <!-- <footer> -->
+            <!-- <button string="Create Payment" name="create_payments" -->
+	    <!-- 	    type="object" class="oe_highlight"/> -->
+            <!-- <button string="Cancel" class="btn btn-secondary" special="cancel"/> -->
+          <!-- </footer> -->
+	  </sheet>
+        </form>
+      </field>
+    </record>
+
+    <!-- <record id="action_account_invoice_multi_payment" model="ir.actions.server"> -->
+    <!--   <field name="name">Multi-Invoice Payment</field> -->
+    <!--   <field name="groups_id" eval="[(4, ref('account.group_account_invoice'))]"/> -->
+    <!--   <field name="model_id" ref="account.model_account_move"/> -->
+    <!--   <field name="binding_model_id" ref="account.model_account_move"/> -->
+    <!--   <field name="binding_view_types">list</field> -->
+    <!--   <field name="state">code</field> -->
+    <!--   <field name="code"> -->
+    <!--     if records: -->
+    <!--     action = records.call_multi_payment_view() -->
+    <!--   </field> -->
+    <!-- </record> -->
+  </data>
+</odoo>
