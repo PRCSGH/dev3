@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_payment_discount_user,bi_multi_invoice_payment.payment_discount,model_payment_discount,base.group_user,1,1,1,1
+multi_inv_payment_manager,bi_multi_invoice_payment.inv_payment_register,model_account_custom_payment_register,account.group_account_invoice,1,1,1,1
+multi_inv_payment_line_manager,bi_multi_invoice_payment.inv_payment_line_register,model_account_payment_register_line,account.group_account_invoice,1,1,1,1
